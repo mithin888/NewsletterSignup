@@ -1,0 +1,11 @@
+{
+  "name": "newslettersignup",
+  "version": "1.0.0",
+  "description": "newsletter signup page",
+  "main": "app.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "author": "Mithin",
+  "license": "ISC"
+}
