@@ -2,6 +2,7 @@ require("dotenv").config();
 const express = require("express");
 const bodyParser = require("body-parser");
 const mailchimp = require("@mailchimp/mailchimp_marketing");
+const capitalize = require("capitalize"); // Capitalize the first letter of a string, or all words in a string.
 
 const app = express();
 
@@ -19,14 +20,17 @@ const run = async (req, res) => {
     .batchListMembers(mailchimp.config.listID, {
       members: [
         {
-          email_address: req.body.email,
+          email_address: req.body.email.toLowerCase(),
           status: "subscribed",
           merge_fields: {
-            FNAME: req.body.firstName,
-            LNAME: req.body.lastName,
+            FNAME: capitalize.words(req.body.firstName),
+            LNAME: capitalize.words(req.body.lastName),
           },
         },
       ],
+    })
+    .then((data) => {
+      return data;
     })
     .catch((err) => {
       return Promise.reject(err);
@@ -43,7 +47,9 @@ app.post("/", (req, res) => {
       if (res.statusCode === 200) {
         res.sendFile(`${__dirname}/success.html`);
         console.log(
-          `Succesfully signed up ${res.req.body.firstName} ${res.req.body.lastName} to the newsletter`
+          `Succesfully signed up ${capitalize.words(
+            req.body.firstName
+          )} ${capitalize.words(req.body.lastName)} to the newsletter`
         );
       }
     })
