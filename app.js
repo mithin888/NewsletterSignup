@@ -1,3 +1,4 @@
+require("dotenv").config();
 const express = require("express");
 const bodyParser = require("body-parser");
 const mailchimp = require("@mailchimp/mailchimp_marketing");
@@ -7,15 +8,15 @@ const app = express();
 app.use(bodyParser.urlencoded({ extended: true }));
 app.use(express.static("public"));
 
-const listId = "4918a7b52e";
 mailchimp.setConfig({
-  apiKey: "a4e03e45a92d5bfa5842cdc71cc9bf55-us14",
-  server: "us14",
+  apiKey: process.env.API_KEY,
+  server: process.env.SERVER,
+  listID: process.env.LIST_ID,
 });
 
 const run = async (req, res) => {
   await mailchimp.lists
-    .batchListMembers(listId, {
+    .batchListMembers(mailchimp.config.listID, {
       members: [
         {
           email_address: req.body.email,
@@ -40,7 +41,6 @@ app.post("/", (req, res) => {
   run(req, res)
     .then(() => {
       if (res.statusCode === 200) {
-        console.log(res.statusCode, res);
         res.sendFile(`${__dirname}/success.html`);
         console.log(
           `Succesfully signed up ${res.req.body.firstName} ${res.req.body.lastName} to the newsletter`
@@ -58,6 +58,6 @@ app.post("/failure", (req, res) => {
   res.redirect("/");
 });
 
-app.listen(process.env.PORT || 3000, () => {
-  console.log("Server is running on port 3000");
+app.listen(process.env.PORT, () => {
+  console.log(`Server is running on port ${process.env.PORT}`);
 });
